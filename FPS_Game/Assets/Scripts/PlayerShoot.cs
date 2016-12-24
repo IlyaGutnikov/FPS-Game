@@ -44,15 +44,17 @@ public class PlayerShoot : NetworkBehaviour
             //Debug.Log("We hit " + _hit.collider.name);
             if (_hit.collider.tag == PLAYER_TAG) {
 
-                CmdPlayerShoot(_hit.collider.name);
+                CmdPlayerShoot(_hit.collider.name, weapon.weaponDamage);
             }
 
         }
     }
 
     [Command]
-    void CmdPlayerShoot(string _ID) {
+    void CmdPlayerShoot(string _playerId, int _damage) {
 
-        Debug.Log(_ID + "has been shoot");
+        Debug.Log(_playerId + "has been shoot");
+        Player _player = GameManager.GetPlayer(_playerId);
+        _player.TakeDamage(_damage);
     }
 }

@@ -4,7 +4,7 @@
 public class PlayerWeapon  {
 
     public string weaponName = "Glock";
-    public float weaponDamage = 10f;
+    public int weaponDamage = 10;
     public float weaponRange = 200f;
 
 }
