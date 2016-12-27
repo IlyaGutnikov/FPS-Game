@@ -3,6 +3,24 @@ using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager instanse;
+
+    public MatchSettings matchSettings;
+
+    void Awake()
+    {
+
+        if (instanse != null)
+        {
+            Debug.LogError("More then one GameManager");
+        }
+        else
+        {
+            instanse = this;
+        }
+    }
+
+    #region PlayerTracking
 
     private const string PLAYER_ID_PREFIX = "Player";
 
@@ -21,23 +39,26 @@ public class GameManager : MonoBehaviour
         players.Remove(_playerId);
     }
 
-    public static Player GetPlayer(string _playerId) {
+    public static Player GetPlayer(string _playerId)
+    {
 
         return players[_playerId];
     }
 
-  /*  void OnGUI()
-    {
+    /*  void OnGUI()
+      {
 
-        GUILayout.BeginArea(new Rect(200, 200, 200, 500));
-        GUILayout.BeginVertical();
+          GUILayout.BeginArea(new Rect(200, 200, 200, 500));
+          GUILayout.BeginVertical();
 
-        foreach (string playerId in players.Keys) {
+          foreach (string playerId in players.Keys) {
 
-            GUILayout.Label(playerId + " - " + players[playerId].transform.name);
-        }
+              GUILayout.Label(playerId + " - " + players[playerId].transform.name);
+          }
 
-            GUILayout.EndVertical();
-        GUILayout.EndArea();
-    }*/
+              GUILayout.EndVertical();
+          GUILayout.EndArea();
+      }*/
+
+    #endregion
 }
