@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+[RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(ConfigurableJoint))]
 [RequireComponent(typeof(PlayerMotor))]
 public class PlayerController : MonoBehaviour
@@ -26,6 +27,8 @@ public class PlayerController : MonoBehaviour
 
     private ConfigurableJoint joint;
 
+    public Animator animator;
+
     void Start()
     {
 
@@ -39,14 +42,16 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         // Get movment
-        float _xMovment = Input.GetAxisRaw("Horizontal");
-        float _zMovment = Input.GetAxisRaw("Vertical");
+        float _xMovment = Input.GetAxis("Horizontal");
+        float _zMovment = Input.GetAxis("Vertical");
 
         Vector3 movHorizontal = transform.right * _xMovment;
         Vector3 movVertical = transform.forward * _zMovment;
 
         //Нормализация говорит что длина векторов не важна => длина вектора всегда 1
-        Vector3 _velocity = (movHorizontal + movVertical).normalized * speed;
+        Vector3 _velocity = (movHorizontal + movVertical) * speed;
+
+        animator.SetFloat("forwardVelocity",_zMovment);
 
         motor.Move(_velocity);
 
