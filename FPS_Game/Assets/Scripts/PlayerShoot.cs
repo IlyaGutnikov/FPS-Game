@@ -37,20 +37,37 @@ public class PlayerShoot : NetworkBehaviour
 
         currentWeapon = weaponManager.GetCurrentWeapon();
 
-        if (Input.GetButtonDown("Fire1"))
+        if (currentWeapon.weaponFireRate <= 0)
         {
-            Shoot();
+            if (Input.GetButtonDown("Fire1"))
+            {
+                Shoot();
+            }
+        }
+        else
+        {
+            if (Input.GetButtonDown("Fire1"))
+            {
+                InvokeRepeating("Shoot", 0f, 1f / currentWeapon.weaponFireRate);
+            }
+            else if (Input.GetButtonUp("Fire1"))
+            {
+                CancelInvoke("Shoot");
+
+            }
         }
     }
 
     [Client]
-    void Shoot() {
+    void Shoot()
+    {
 
         RaycastHit _hit;
         if (Physics.Raycast(cam.transform.position, cam.transform.forward, out _hit, currentWeapon.weaponRange, mask))
         {
             //Debug.Log("We hit " + _hit.collider.name);
-            if (_hit.collider.tag == PLAYER_TAG) {
+            if (_hit.collider.tag == PLAYER_TAG)
+            {
 
                 CmdPlayerShoot(_hit.collider.name, currentWeapon.weaponDamage);
             }
@@ -59,7 +76,8 @@ public class PlayerShoot : NetworkBehaviour
     }
 
     [Command]
-    void CmdPlayerShoot(string _playerId, int _damage) {
+    void CmdPlayerShoot(string _playerId, int _damage)
+    {
 
         Debug.Log(_playerId + "has been shoot");
         Player _player = GameManager.GetPlayer(_playerId);
