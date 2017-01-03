@@ -1,19 +1,12 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 
+
+[RequireComponent(typeof(WeaponManager))]
 public class PlayerShoot : NetworkBehaviour
 {
 
     private const string PLAYER_TAG = "Player";
-
-    [SerializeField]
-    private GameObject weaponGFX;
-
-    [SerializeField]
-    private PlayerWeapon weapon;
-
-    [SerializeField]
-    private string weaponLayerName = "Weapon";
 
     [SerializeField]
     private Camera cam;
@@ -21,11 +14,12 @@ public class PlayerShoot : NetworkBehaviour
     [SerializeField]
     private LayerMask mask;
 
+    private PlayerWeapon currentWeapon;
+    private WeaponManager weaponManager;
+
     // Use this for initialization
     void Start()
     {
-
-        weaponGFX.layer = LayerMask.NameToLayer(weaponLayerName);
 
         if (cam == null)
         {
@@ -33,11 +27,15 @@ public class PlayerShoot : NetworkBehaviour
             this.enabled = false;
         }
 
+        weaponManager = GetComponent<WeaponManager>();
+
     }
 
     // Update is called once per frame
     void Update()
     {
+
+        currentWeapon = weaponManager.GetCurrentWeapon();
 
         if (Input.GetButtonDown("Fire1"))
         {
@@ -49,12 +47,12 @@ public class PlayerShoot : NetworkBehaviour
     void Shoot() {
 
         RaycastHit _hit;
-        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out _hit, weapon.weaponRange, mask))
+        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out _hit, currentWeapon.weaponRange, mask))
         {
             //Debug.Log("We hit " + _hit.collider.name);
             if (_hit.collider.tag == PLAYER_TAG) {
 
-                CmdPlayerShoot(_hit.collider.name, weapon.weaponDamage);
+                CmdPlayerShoot(_hit.collider.name, currentWeapon.weaponDamage);
             }
 
         }
