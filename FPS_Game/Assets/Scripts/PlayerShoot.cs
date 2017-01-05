@@ -58,9 +58,22 @@ public class PlayerShoot : NetworkBehaviour
         }
     }
 
+    [Command]
+    void CmdOnShoot() {
+
+
+    }
+
     [Client]
     void Shoot()
     {
+
+        if (!isLocalPlayer) {
+
+            return;
+        }
+
+        CmdOnShoot();
 
         RaycastHit _hit;
         if (Physics.Raycast(cam.transform.position, cam.transform.forward, out _hit, currentWeapon.weaponRange, mask))

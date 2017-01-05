@@ -52,7 +52,7 @@ public class WeaponManager : NetworkBehaviour
 
         if (isLocalPlayer)
         {
-            _weaponInstance.layer = LayerMask.NameToLayer(weaponLayerName);
+            Util.SetLayerRecursevly(_weaponInstance, LayerMask.NameToLayer(weaponLayerName));
         }
     }
 
