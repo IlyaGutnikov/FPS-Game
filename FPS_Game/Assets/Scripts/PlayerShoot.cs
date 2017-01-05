@@ -58,10 +58,32 @@ public class PlayerShoot : NetworkBehaviour
         }
     }
 
+
     [Command]
-    void CmdOnShoot() {
+    void CmdOnHit(Vector3 _pos, Vector3 _normal)
+    {
+        RpcDoHitEffect(_pos, _normal);
+    }
 
+    [ClientRpc]
+    void RpcDoHitEffect(Vector3 _pos, Vector3 _normal)
+    {
+        GameObject hitEffect = (GameObject) Instantiate(weaponManager.GetCurrentGraphics().hitEffectPrefab, _pos, Quaternion.LookRotation(_normal));
+        Destroy(hitEffect, 2f);
+    }
 
+    [Command]
+    void CmdOnShoot()
+    {
+        RpcDoShootEffect();
+
+    }
+
+    [ClientRpc]
+    void RpcDoShootEffect()
+    {
+
+        weaponManager.GetCurrentGraphics().muzzleFlash.Play();
     }
 
     [Client]
@@ -81,9 +103,10 @@ public class PlayerShoot : NetworkBehaviour
             //Debug.Log("We hit " + _hit.collider.name);
             if (_hit.collider.tag == PLAYER_TAG)
             {
-
                 CmdPlayerShoot(_hit.collider.name, currentWeapon.weaponDamage);
             }
+
+            CmdOnHit(_hit.point, _hit.normal);
 
         }
     }
