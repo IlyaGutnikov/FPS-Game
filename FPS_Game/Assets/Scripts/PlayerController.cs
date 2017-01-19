@@ -14,6 +14,15 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private float thrusterForce = 1000f;
 
+    [SerializeField]
+    private float fuelBurnSpeed = 1f;
+    [SerializeField]
+    private float fuelRegenSpeed = 0.3f;
+    private float fuelAmount = 1f;
+
+    [SerializeField]
+    private LayerMask envMask;
+
     [Header("Spring Settings")]
     [SerializeField]
     private JointDriveMode jointMode = JointDriveMode.Position;
@@ -28,6 +37,11 @@ public class PlayerController : MonoBehaviour
 
     public Animator animator;
 
+    public float GetFuelAmount() {
+
+        return fuelAmount;
+    }
+
     void Start()
     {
 
@@ -40,6 +54,15 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        RaycastHit _hit;
+        //Set target position for the spring
+        if (Physics.Raycast(transform.position, Vector3.down, out _hit, 100f,envMask))
+        {
+            joint.targetPosition = new Vector3(0f, -_hit.point.y,0f);
+        } else {
+            joint.targetPosition = new Vector3(0f, 0f, 0f);
+        }
+
         // Get movment
         float _xMovment = Input.GetAxis("Horizontal");
         float _zMovment = Input.GetAxis("Vertical");
@@ -74,17 +97,24 @@ public class PlayerController : MonoBehaviour
         Vector3 _thrusterForce = Vector3.zero;
 
         //Apply the thruster force
-        if (Input.GetButton("Jump"))
+        if (Input.GetButton("Jump") && (fuelAmount > 0f))
         {
+            fuelAmount -= fuelBurnSpeed * Time.deltaTime;
 
-            _thrusterForce = Vector3.up * thrusterForce;
-            SetJointSettings(0f);
+            if (fuelAmount >= 0.01f) {
 
+                _thrusterForce = Vector3.up * thrusterForce;
+                SetJointSettings(0f);
+            }
         }
         else {
 
+            fuelAmount += fuelRegenSpeed * Time.deltaTime;
+       
             SetJointSettings(jointSpring);
         }
+
+        fuelAmount = Mathf.Clamp(fuelAmount, 0f, 1f);
 
         motor.ApplyThruster(_thrusterForce);
     }

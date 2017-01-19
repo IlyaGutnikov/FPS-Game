@@ -2,6 +2,7 @@
 using UnityEngine.Networking;
 
 [RequireComponent(typeof(Player))]
+[RequireComponent(typeof(PlayerController))]
 public class PlayerSetup : NetworkBehaviour
 {
     [SerializeField]
@@ -38,12 +39,20 @@ public class PlayerSetup : NetworkBehaviour
                 sceneCamera.gameObject.SetActive(false);
             }
 
-            //disab;e player graphics for LP
+            //disable player graphics for LP
             SetLayerRecurservly(playerGraphics, LayerMask.NameToLayer(dontDrawLayerName));
 
             //Create PlayerUI
             playerUIInstance = Instantiate(playerUIPrefab);
             playerUIInstance.name = playerUIPrefab.name;
+
+            //Configure player UI
+            PlayerUI ui = playerUIInstance.GetComponent<PlayerUI>();
+            if (ui == null) {
+
+                Debug.LogError("PlayerUI not set in prefab");
+            }
+            ui.SetPLayerController(GetComponent<PlayerController>());
         }
 
         GetComponent<Player>().Setup();
